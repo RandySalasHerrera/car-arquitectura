@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  web:
+    image: djangoondocker
+    build: ./app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+      # - 3000:3000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_django
+      - POSTGRES_PASSWORD=hello_django
+      - POSTGRES_DB=hello_django_dev
+  
+  celery:
+    build: ./app
+    command: celery worker --app=app_django --loglevel=info
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - web
+      - redis
+  
+  headless_chrome:
+    image: browserless/chrome:latest
+    ports:
+      - "3000:3000"
+    container_name: headless_chrome
+  
+  redis:
+    image: redis:6-alpine
+  
+
+volumes:
+  postgres_data:
