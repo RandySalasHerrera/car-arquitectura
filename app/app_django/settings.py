@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'coursescraped',
     'student',
     'teacher',
+    'course',
+    'qualification',
 
 ]
 

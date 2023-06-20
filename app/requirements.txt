@@ -11,4 +11,4 @@ drf-yasg
 celery==4.4.7
 redis==3.5.3
 amqp==2.6.1
-seleniumx
+selenium

@@ -16,8 +16,8 @@ class CourseScrapedAPIView(generics.ListAPIView):
         course_list = get_courses(driver)
 
         for course_name in course_list:
-            if not models.CursoScraped.objects.filter(name=course_name).exists():
-                models.CursoScraped.objects.create(name=course_name)
+            if not models.CursoScraped.objects.filter(name=course_name.lower()).exists():
+                models.CursoScraped.objects.create(name=course_name.lower())
 
         data = {
             'status': 200,
