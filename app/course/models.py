@@ -16,5 +16,5 @@ class Course(models.Model):
 
     class Meta:
         verbose_name = "Course"
-        verbose_name_plural = "Courses"
+        verbose_name_plural = "List Courses"
         ordering = ['-id']

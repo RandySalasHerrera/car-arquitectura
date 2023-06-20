@@ -9,6 +9,6 @@ class CursoScraped(models.Model):
 
     class Meta:
         verbose_name = "Course Scraped"
-        verbose_name_plural = "Course Scrapeds"
+        verbose_name_plural = "List Course Scrapeds"
         ordering = ['-name']
 

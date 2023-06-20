@@ -1,8 +1,7 @@
 import os
 from django.conf import settings
-from base.utils import createUser, createTeacher, createCourse
+from base.utils import createUser, createTeacher, createCourse, createQualification
 from base import models
-from student import models as models_student
 from rest_framework import generics
 from rest_framework.response import Response
 from openpyxl import load_workbook
@@ -18,7 +17,7 @@ class ImportExcelAPIView(generics.ListAPIView):
 
             wb = load_workbook(excel_upload.file)
 
-            nombres_hojas = ['Hoja1', 'Hoja2', 'Hoja3']
+            nombres_hojas = ['Hoja1', 'Hoja2', 'Hoja3', 'Hoja4']
             for nombre_hoja in nombres_hojas:
 
                 hoja = wb[nombre_hoja]
@@ -37,9 +36,16 @@ class ImportExcelAPIView(generics.ListAPIView):
                 #     except:
                 #         pass
 
-                if nombre_hoja == 'Hoja3':
+                # if nombre_hoja == 'Hoja3':
+                #     try:
+                #         course = createCourse(hoja)
+                #        # course_creados, course_error = course
+                #     except:
+                #         pass
+                
+                if nombre_hoja == 'Hoja4':
                     try:
-                        course = createCourse(hoja)
+                        course = createQualification(hoja)
                        # course_creados, course_error = course
                     except:
                         pass
@@ -51,10 +57,6 @@ class ImportExcelAPIView(generics.ListAPIView):
 
             data = {
                 'status': 200,
-                # 'estudiantes_creados': f'Se crearon {estudiantes_creados} estudiantes correctamente',
-                # 'estudiantes_error': f'Se crearon {estudiantes_error} estudiantes errores',
-                # 'teacher_creados': f'Se crearon {teacher_creados} teacher correctamente',
-                # 'teacher_error': f'Se crearon {teacher_error} teacher errores',
             }
 
             return Response(data=data)

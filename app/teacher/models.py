@@ -14,5 +14,5 @@ class Teacher(models.Model):
 
     class Meta:
         verbose_name = "Teacher"
-        verbose_name_plural = "Teachers"
+        verbose_name_plural = "List Teachers"
         ordering = ['-name']

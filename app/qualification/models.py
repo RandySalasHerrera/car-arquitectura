@@ -12,9 +12,9 @@ class Qualification(models.Model):
 
 
     def __str__(self):
-            return self.course
+        return self.course.course_scraped.name
 
     class Meta:
-        verbose_name = "Course Scraped"
-        verbose_name_plural = "Course Scrapeds"
+        verbose_name = "Qualification"
+        verbose_name_plural = "List Qualifications"
         ordering = ['-id']

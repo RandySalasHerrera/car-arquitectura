@@ -2,6 +2,7 @@ from coursescraped import models as models_course_scraped
 from student import models as models_student
 from teacher import models as models_teacher
 from course import models as models_course
+from qualification import models as models_qualification
 
 
 def createUser(data):
@@ -115,5 +116,42 @@ def createCourse(data):
     except Exception as e:
         course_error += 1
         return course_creados, course_error
+
+
+
+def createQualification(data):
+    try:
+        quialification_creados = 0
+        quialification_error = 0
+        for fila in data.iter_rows(min_row=2, values_only=True):
+            course_name = fila[0].lower()
+            student = fila[1].lower()
+            quialification = fila[2]
+
+            if course_name and isinstance(course_name, str):
+                if student and isinstance(student, str) and quialification and isinstance(quialification, int) :
+                    if models_course.Course.objects.filter(course_scraped__name=course_name, students__name=student).exists():
+                        
+                        get_course = models_course.Course.objects.filter(course_scraped__name=course_name, students__name=student).first()
+                        get_student = models_student.Student.objects.filter(name=student).first()
+
+                        models_qualification.Qualification.objects.create(
+                            course=get_course,
+                            student=get_student,
+                            qualification=quialification
+                        )
+
+                        quialification_error += 1
+                    else:
+                        quialification_error += 1
+                else:
+                    quialification_error += 1
+            else:
+                quialification_error += 1
+                    
+        return quialification_creados, quialification_error
+    except Exception as e:
+        teacher_error += 1
+        return quialification_creados, quialification_error
 
     
