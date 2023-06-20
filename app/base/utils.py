@@ -131,17 +131,19 @@ def createQualification(data):
             if course_name and isinstance(course_name, str):
                 if student and isinstance(student, str) and quialification and isinstance(quialification, int) :
                     if models_course.Course.objects.filter(course_scraped__name=course_name, students__name=student).exists():
-                        
-                        get_course = models_course.Course.objects.filter(course_scraped__name=course_name, students__name=student).first()
-                        get_student = models_student.Student.objects.filter(name=student).first()
 
-                        models_qualification.Qualification.objects.create(
-                            course=get_course,
-                            student=get_student,
-                            qualification=quialification
-                        )
+                            get_course = models_course.Course.objects.filter(course_scraped__name=course_name, students__name=student).first()
+                            get_student = models_student.Student.objects.filter(name=student).first()
 
-                        quialification_error += 1
+                            if not models_qualification.Qualification.objects.filter(course=get_course, student=get_student).exists():
+                                models_qualification.Qualification.objects.create(
+                                    course=get_course,
+                                    student=get_student,
+                                    qualification=quialification
+                                )
+
+                                quialification_creados += 1
+
                     else:
                         quialification_error += 1
                 else:
