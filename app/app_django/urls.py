@@ -17,44 +17,28 @@ from django.contrib import admin
 from django.urls import include,path
 from django.views.generic import RedirectView
 from base.api import views
-from base.api import views
+from course.api.router import router_course
+from qualification.api.router import router_qualification
+from student.api.router import router_student
+from teacher.api.router import router_teacher
+
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 
-# from drf_yasg.views import get_schema_view
-# from drf_yasg import openapi
 
-# schema_view = get_schema_view(
-#    openapi.Info(
-#       title="Snippets API",
-#       default_version='v1',
-#       description="Test description",
-#       terms_of_service="https://www.google.com/policies/terms/",
-#       contact=openapi.Contact(email="contact@snippets.local"),
-#       license=openapi.License(name="BSD License"),
-#    ),
-#    public=True,
-# )
-
-class Protegida(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def get(self, request):
-        return Response({"content": "Esta vista está protegida"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", RedirectView.as_view(url="admin/")),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('protegida/', Protegida.as_view(), name='protegida'),
     path("", include("coursescraped.api.urls")),
     path("", include("base.api.urls")),
 
-    # path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    # path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('api/v1/', include(router_course.urls)),
+    path('api/v1/', include(router_qualification.urls)),
+    path('api/v1/', include(router_student.urls)),
+    path('api/v1/', include(router_teacher.urls)),
 ]
+ 
