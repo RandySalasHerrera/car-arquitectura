@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importar archivo .xlsx</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+      <h1>Importar archivo .xlsx</h1>
+      <p>Selecciona un archivo .xlsx para importar:</p>
+      <input type="file" id="fileInput" class="form-control-file">
+      <button id="importButton" class="btn btn-primary mt-3">Importar</button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const csrfToken = "{{ csrf_token }}";
+    document.getElementById('importButton').addEventListener('click', () => {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        fetch('http://localhost:8000/api/v1/import_excel/', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrfToken
+          },
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Archivo importado correctamente');
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivo importado correctamente',
+                text: 'Una ves finalice la importacion te enviaremos un correo',
+                showConfirmButton: true,
+                timer: 2500
+              })
+            // Realizar acciones adicionales después de importar el archivo
+          } else {
+            console.error('Error al importar el archivo');
+            Swal.fire({
+                icon: 'error',
+                title: 'Se presento un error',
+                showConfirmButton: true,
+                timer: 2500
+              })
+          }
+        })
+        .catch(error => {
+          console.error('Error en la solicitud: ', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Se presento un error',
+            showConfirmButton: true,
+            timer: 2500
+          })
+        });
+      } else {
+        console.error('No se ha seleccionado ningún archivo');
+        Swal.fire({
+            icon: 'error',
+            title: 'Se presento un error',
+            showConfirmButton: true,
+            timer: 2500
+          })
+      }
+    });
+  </script>
+</body>
+</html>

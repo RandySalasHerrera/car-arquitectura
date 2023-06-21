@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include,path
 from django.views.generic import RedirectView
 from base.api import views
+from coursescraped import views as views_coursescraped
 from course.api.router import router_course
 from qualification.api.router import router_qualification
 from student.api.router import router_student
@@ -30,7 +31,8 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", RedirectView.as_view(url="admin/")),
+    # path("", RedirectView.as_view(url="admin/")),
+    path("", views_coursescraped.index),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include("coursescraped.api.urls")),
