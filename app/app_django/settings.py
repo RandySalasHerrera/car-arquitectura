@@ -188,3 +188,12 @@ BROKER_URL = 'amqp://{broker_usr}:{broker_pwd}@{broker_host}:{broker_port}{broke
 #Redis configurations
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+
+EMAIL_HOST = "mail.lsv-tech.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "dashboardbot@lsv-tech.com"
+EMAIL_HOST_PASSWORD = "!24D#-;9f-eO"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+

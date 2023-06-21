@@ -1,8 +1,13 @@
+import os
 from coursescraped import models as models_course_scraped
 from student import models as models_student
 from teacher import models as models_teacher
 from course import models as models_course
 from qualification import models as models_qualification
+from openpyxl import load_workbook
+from django.template.loader import get_template
+from django.core.mail import send_mail
+import threading
 
 
 def createUser(data):
@@ -84,33 +89,37 @@ def createCourse(data):
             teacher_name = fila[1].lower()
             student_name = fila[2].lower()
 
-            # Obtener o crear el curso
-            if not models_course_scraped.CursoScraped.objects.filter(name=course_scraped_name).exists():
-                course_scraped = models_course_scraped.CursoScraped.objects.create(name=course_scraped_name)
+            if course_scraped_name and isinstance(course_scraped_name, str) and teacher_name and isinstance(teacher_name, str) and student_name and isinstance(student_name, str) :
 
-            course_scraped = models_course_scraped.CursoScraped.objects.filter(name=course_scraped_name).first()
+                if not models_course_scraped.CursoScraped.objects.filter(name=course_scraped_name).exists():
+                    course_scraped = models_course_scraped.CursoScraped.objects.create(name=course_scraped_name)
 
-            if not models_teacher.Teacher.objects.filter(name=teacher_name).exists():
-                models_teacher.Teacher.objects.create(name=teacher_name)
+                course_scraped = models_course_scraped.CursoScraped.objects.filter(name=course_scraped_name).first()
 
-            teacher = models_teacher.Teacher.objects.filter(name=teacher_name).first()
+                if not models_teacher.Teacher.objects.filter(name=teacher_name).exists():
+                    models_teacher.Teacher.objects.create(name=teacher_name)
 
-            if not models_student.Student.objects.filter(name=student_name).exists():
-                models_student.Student.objects.create(name=student_name)
+                teacher = models_teacher.Teacher.objects.filter(name=teacher_name).first()
 
-            student = models_student.Student.objects.filter(name=student_name).first()
+                if not models_student.Student.objects.filter(name=student_name).exists():
+                    models_student.Student.objects.create(name=student_name)
 
-            if not models_course.Course.objects.filter(course_scraped=course_scraped).exists():
-                course = models_course.Course.objects.create(
-                    course_scraped=course_scraped,
-                    teacher=teacher,
-                )
-                course.students.add(student)
-            else:
-                course = models_course.Course.objects.filter(course_scraped=course_scraped).first()
-                course.students.add(student)
+                student = models_student.Student.objects.filter(name=student_name).first()
+
+                if not models_course.Course.objects.filter(course_scraped=course_scraped).exists():
+                    course = models_course.Course.objects.create(
+                        course_scraped=course_scraped,
+                        teacher=teacher,
+                    )
+                    course.students.add(student)
+                    course_creados += 1
+                else:
+                    course = models_course.Course.objects.filter(course_scraped=course_scraped).first()
+                    course.students.add(student)
+                    course_creados += 1
             
-            course_creados += 1
+            else:
+                course_error += 1
                     
         return course_creados, course_error
     except Exception as e:
@@ -156,4 +165,79 @@ def createQualification(data):
         teacher_error += 1
         return quialification_creados, quialification_error
 
-    
+
+
+def emailNotification(data):
+    context = data
+    template = get_template("notificacion.html")
+    context = template.render(context)
+
+    send_mail(
+        "Notificacion Prueba De Arquitectura",
+        "",
+        "dashboardbot@lsv-tech.com",
+        # [os.environ.get("EMAIL_NOTIFICATION", "")],
+        ["salasrandy89@gmail.com"],
+        fail_silently=True,
+        html_message=context,
+    )
+
+def threading_emailNotification(data):
+    thread = threading.Thread(target=emailNotification, args=(data,), daemon=False)
+    thread.start()
+
+
+def importFile(excel_upload):
+    wb = load_workbook(excel_upload.file)
+    nombres_hojas = ['Hoja1', 'Hoja2', 'Hoja3', 'Hoja4']
+    for nombre_hoja in nombres_hojas:
+
+        hoja = wb[nombre_hoja]
+
+        if nombre_hoja == 'Hoja1':
+            try:
+                student = createUser(hoja)
+                estudiantes_creados, estudiantes_error = student
+                print(estudiantes_creados, estudiantes_error, 'student')
+            except:
+                pass
+
+        if nombre_hoja == 'Hoja2':
+            try:
+                teacher = createTeacher(hoja)
+                teacher_creados, teacher_error = teacher
+                print(teacher_creados, teacher_error, 'teacher')
+            except:
+                pass
+
+        if nombre_hoja == 'Hoja3':
+            try:
+                course = createCourse(hoja)
+                course_creados, course_error = course
+                print(course_creados, course_error, 'course')
+            except:
+                pass
+
+        if nombre_hoja == 'Hoja4':
+            try:
+                qualification = createQualification(hoja)
+                qualification_creados, qualification_error = qualification
+                print(qualification_creados, qualification_error, 'qualification')
+            except:
+                pass
+
+    wb.close()
+    data = {
+        'estudiantes_creados': estudiantes_creados,
+        'estudiantes_error': estudiantes_error,
+        'teacher_error': teacher_error,
+        'teacher_creados': teacher_creados,
+        'course_creados': course_creados,
+        'course_error': course_error,
+        'qualification_creados': qualification_creados,
+        'qualification_error': qualification_error,
+    }
+
+    threading_emailNotification(data)
+
+
