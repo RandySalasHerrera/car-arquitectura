@@ -26,6 +26,7 @@ class ImportExcelAPIView(generics.ListAPIView):
 
             data = {
                 'status': 200,
+                'message': 'Archivo importado correctamente'
             }
 
             return Response(data=data)

@@ -176,8 +176,7 @@ def emailNotification(data):
         "Notificacion Prueba De Arquitectura",
         "",
         "dashboardbot@lsv-tech.com",
-        # [os.environ.get("EMAIL_NOTIFICATION", "")],
-        ["salasrandy89@gmail.com"],
+        [os.environ.get("EMAIL_NOTIFICATION", "")],
         fail_silently=True,
         html_message=context,
     )

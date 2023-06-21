@@ -28,10 +28,22 @@ Sigue los pasos a continuación para configurar y utilizar la aplicación:
 3. Inicia el contenedor de Docker ejecutando el siguiente comando:
     ```shell
    docker compose up -d
-4. Accede a la aplicación en tu navegador web utilizando la siguiente URL:
+4. Crear el super usuario para poder iniciar sesion en el admin:
+    ```shell
+   docker compose run web python manage.py createsuperuser
+5. Accede a la aplicación en tu navegador web utilizando la siguiente URL:
    ```shell
    http://localhost:8000
-5. ¡Listo! Ahora puedes utilizar y explorar la aplicación.
-   
+6. ¡Listo! Ahora puedes utilizar y explorar la aplicación.
+
+## Importar archivo excel
+Para poder acceder a la vista de importacion debes usar la siguiente URL: http://localhost:8000 ten encuenta que debes usar el archivo import.xlsx que se encuentra en la raiz de este proyecto
+
+## Scrapper de cursos
+Para poder acceder a la vista del scraper de cursos debes usar la siguiente URL: 
+http://localhost:8000/scraper 
+
+## Admin
+Para poder acceder a la vista del administrador debes usar la siguiente URL: http://localhost:8000/admin/ 
 
 
